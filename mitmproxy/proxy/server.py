@@ -210,8 +210,13 @@ class ConnectionHandler(metaclass=abc.ABCMeta):
             try:
                 command.connection.timestamp_start = time.time()
                 if command.connection.transport_protocol == "tcp":
+                    host, port = command.connection.address
+                    split_host = host.split("@", 1)
+                    if len(split_host) == 2:
+                        host = split_host[1]
                     reader, writer = await asyncio.open_connection(
-                        *command.connection.address,
+                        host,
+                        port,
                         local_addr=command.connection.sockname,
                     )
                 elif command.connection.transport_protocol == "udp":
